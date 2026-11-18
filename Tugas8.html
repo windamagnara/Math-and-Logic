@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JavaScript Dasar — Web Math & Logic</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bistre: #210100;
+      --goldfinch: #E6A341;
+      --butter: #FECE79;
+      --indian-red: #B14A36;
+      --garnet: #8C0902;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bistre);
+      background-image:
+        radial-gradient(circle at 12% 10%, rgba(140, 9, 2, 0.45) 0%, transparent 45%),
+        radial-gradient(circle at 88% 85%, rgba(177, 74, 54, 0.3) 0%, transparent 50%);
+      color: var(--butter);
+      min-height: 100vh;
+      padding: 40px 20px;
+      line-height: 1.6;
+    }
+
+    .page-wrapper {
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    .hero-header {
+      text-align: center;
+      max-width: 720px;
+      margin: 0 auto 44px;
+    }
+
+    .badge-row {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .badge {
+      background-color: var(--garnet);
+      color: var(--butter);
+      border: 1px solid var(--goldfinch);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      padding: 6px 14px;
+      border-radius: 999px;
+    }
+
+    .badge-outline {
+      background-color: rgba(177, 74, 54, 0.2);
+      color: var(--goldfinch);
+    }
+
+    .hero-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 42px;
+      font-weight: 700;
+      color: var(--butter);
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+
+    .hero-header h1 span {
+      color: var(--goldfinch);
+      font-style: italic;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: rgba(254, 206, 121, 0.8);
+    }
+
+    .subtitle code {
+      background-color: rgba(140, 9, 2, 0.7);
+      color: var(--butter);
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-size: 13px;
+    }
+
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 24px;
+    }
+
+    .bento-card {
+      background: linear-gradient(155deg, rgba(140, 9, 2, 0.42) 0%, rgba(33, 1, 0, 0.92) 100%);
+      border: 1px solid rgba(230, 163, 65, 0.35);
+      border-radius: 22px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+      transition: transform 0.25s ease, border-color 0.25s ease;
+    }
+
+    .bento-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--goldfinch);
+    }
+
+    .card-parity {grid-column: span 5;}
+    
+    .card-math {grid-column: span 7;}
+
+    .card-guess {
+      grid-column: span 12;
+      display: grid;
+      grid-template-columns: 1fr 1.25fr;
+      gap: 32px;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(177, 74, 54, 0.28) 0%, rgba(140, 9, 2, 0.45) 50%, rgba(33, 1, 0, 0.95) 100%);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .card-index {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--goldfinch);
+      line-height: 1;
+    }
+
+    .var-tag {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--butter);
+      background-color: var(--indian-red);
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+
+    .bento-card h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      color: var(--butter);
+      margin-bottom: 8px;
+    }
+
+    .card-desc {
+      font-size: 13.5px;
+      color: rgba(254, 206, 121, 0.78);
+      margin-bottom: 22px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .input-group label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      color: var(--goldfinch);
+    }
+
+    input[type="number"] {
+      width: 100%;
+      background-color: rgba(33, 1, 0, 0.85);
+      border: 1.5px solid var(--indian-red);
+      border-radius: 12px;
+      padding: 13px 16px;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--butter);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input[type="number"]::placeholder {
+      color: rgba(254, 206, 121, 0.35);
+      font-weight: 400;
+    }
+
+    input[type="number"]:focus {
+      border-color: var(--goldfinch);
+      box-shadow: 0 0 0 3px rgba(230, 163, 65, 0.2);
+    }
+
+    .math-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .operator-selector {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+
+    .op-btn {
+      background-color: rgba(33, 1, 0, 0.85);
+      border: 1.5px solid var(--indian-red);
+      border-radius: 12px;
+      padding: 10px 6px;
+      color: var(--butter);
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      transition: all 0.2s ease;
+    }
+
+    .op-btn:hover {
+      border-color: var(--goldfinch);
+      background-color: rgba(177, 74, 54, 0.25);
+    }
+
+    .op-btn.active {
+      background-color: var(--goldfinch);
+      border-color: var(--butter);
+      color: var(--bistre);
+      font-weight: 700;
+      box-shadow: 0 6px 18px rgba(230, 163, 65, 0.3);
+    }
+
+    .op-symbol {
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+
+    .op-name {
+      font-size: 11px;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: linear-gradient(135deg, var(--goldfinch) 0%, var(--butter) 100%);
+      color: var(--bistre);
+      border: none;
+      border-radius: 12px;
+      padding: 13px 20px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.2s ease;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.92;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background-color: var(--garnet);
+      color: var(--butter);
+      border: 1.5px solid var(--indian-red);
+      border-radius: 12px;
+      padding: 13px 18px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--indian-red);
+      border-color: var(--goldfinch);
+    }
+
+    .guess-buttons {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .result-box {
+      margin-top: 18px;
+      background-color: rgba(33, 1, 0, 0.9);
+      border-left: 4px solid var(--goldfinch);
+      border-radius: 12px;
+      padding: 14px 16px;
+      min-height: 62px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .card-guess .result-box {margin-top: 0;}
+
+    .result-placeholder {
+      font-size: 13px;
+      color: rgba(254, 206, 121, 0.5);
+      font-style: italic;
+    }
+
+    .result-main {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--butter);
+    }
+
+    .result-sub {
+      font-size: 12.5px;
+      color: var(--goldfinch);
+      margin-top: 3px;
+    }
+
+    .all-ops-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .all-ops-item {
+      background-color: rgba(33, 1, 0, 0.65);
+      border: 1px solid rgba(230, 163, 65, 0.25);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 12.5px;
+      color: var(--butter);
+    }
+
+    .all-ops-item strong {color: var(--goldfinch);}
+
+    .result-success {
+      border-left-color: var(--butter);
+      background-color: rgba(230, 163, 65, 0.16);
+    }
+
+    .result-error {
+      border-left-color: var(--indian-red);
+      background-color: rgba(140, 9, 2, 0.45);
+    }
+
+    .footer-note {
+      text-align: center;
+      margin-top: 36px;
+      font-size: 12px;
+      color: rgba(254, 206, 121, 0.6);
+      letter-spacing: 0.5px;
+    }
+
+    @media (max-width: 860px) {
+      .card-parity,
+      .card-math {grid-column: span 12;}
+      .card-guess {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+      .hero-header h1 {font-size: 32px;}
+    }
+
+    @media (max-width: 520px) {
+      .math-inputs,
+      .guess-buttons,
+      .all-ops-grid {grid-template-columns: 1fr;}
+      .operator-selector {grid-template-columns: repeat(3, 1fr);}
+    }
+  </style>
+</head>
+<body>
+
+  <main class="page-wrapper">
+    <header class="hero-header">
+      <div class="badge-row">
+        <span class="badge">WEB MATH &amp; LOGIC</span>
+        <span class="badge badge-outline">JAVASCRIPT DASAR &amp; VARIABEL JS</span>
+      </div>
+      <h1>Eksplorasi Logika &amp; <span>Variabel JavaScript</span></h1>
+      <p class="subtitle">Implementasi deklarasi <code>var</code>, <code>let</code>, dan <code>const</code> 
+        dalam antarmuka interaktif berbasis operasi aritmatika dan logika kondisional.</p>
+    </header>
+
+    <section class="bento-grid">
+
+      <!-- Kartu 1: Ganjil / Genap -->
+      <article class="bento-card card-parity">
+        <div class="card-top">
+          <span class="card-index">01</span>
+          <span class="var-tag">var • let • const</span>
+        </div>
+        <h2>Deteksi Ganjil &amp; Genap</h2>
+        <p class="card-desc">Masukkan bilangan bulat untuk mengecek status paritas menggunakan ketiga jenis variabel JS.</p>
+
+        <div class="input-group">
+          <label for="inputAngka">Bilangan Bulat</label>
+          <input type="number" id="inputAngka" placeholder="Contoh: 27">
+        </div>
+
+        <button type="button" id="btnCekParitas" class="btn-primary">Analisis Bilangan</button>
+        <div id="hasilParitas" class="result-box"><span class="result-placeholder">Lihat hasil analisis di sini...</span></div>
+      </article>
+
+      <!-- Kartu 2: Operasi Matematika Dasar -->
+      <article class="bento-card card-math">
+        <div class="card-top">
+          <span class="card-index">02</span>
+          <span class="var-tag">Aritmatika Interaktif</span>
+        </div>
+        <h2>Kalkulator Operasi Dasar</h2>
+        <p class="card-desc">Input dua nilai, lalu pilih satu operasi atau hitung semua operasi sekaligus.</p>
+
+        <div class="math-inputs">
+          <div class="input-group">
+            <label for="angkaPertama">Angka Pertama</label>
+            <input type="number" id="angkaPertama" placeholder="0">
+          </div>
+          <div class="input-group">
+            <label for="angkaKedua">Angka Kedua</label>
+            <input type="number" id="angkaKedua" placeholder="0">
+          </div>
+        </div>
+
+        <!-- Pilihan Operasi Matematika -->
+        <div class="input-group">
+          <label>Pilih Operasi Matematika</label>
+          <div class="operator-selector" id="operatorGroup">
+            <button type="button" class="op-btn active" data-op="tambah">
+              <span class="op-symbol">+</span>
+              <span class="op-name">Tambah</span>
+            </button>
+            <button type="button" class="op-btn" data-op="kurang">
+              <span class="op-symbol">&minus;</span>
+              <span class="op-name">Kurang</span>
+            </button>
+            <button type="button" class="op-btn" data-op="kali">
+              <span class="op-symbol">&times;</span>
+              <span class="op-name">Kali</span>
+            </button>
+            <button type="button" class="op-btn" data-op="bagi">
+              <span class="op-symbol">&divide;</span>
+              <span class="op-name">Bagi</span>
+            </button>
+            <button type="button" class="op-btn" data-op="semua">
+              <span class="op-symbol">&equiv;</span>
+              <span class="op-name">Semua</span>
+            </button>
+          </div>
+        </div>
+
+        <button type="button" id="btnHitung" class="btn-primary">Hitung Hasil Operasi</button>
+        <div id="hasilMath" class="result-box"><span class="result-placeholder">Pilih operasi dan klik tombol hitung...</span></div>
+      </article>
+
+      <!-- Kartu 3: Program Tebak Angka -->
+      <article class="bento-card card-guess">
+        <div class="guess-left">
+          <div class="card-top">
+            <span class="card-index">03</span>
+            <span class="var-tag">Kondisional &amp; Random</span>
+          </div>
+          <h2>Tebak Angka Rahasia</h2>
+         <p> <class="card-desc">Sistem sudah mengunci satu angka rahasia dari <strong>1 sampai 10</strong>.
+          Uji instingmu, tebak angkanya dan buktikan apakah tebakanmu <strong>Benar</strong> atau <strong>Salah</strong>!</p>
+        </div>
+
+        <div class="guess-right">
+          <div class="guess-controls">
+            <div class="input-group">
+              <label for="inputTebakan">Tebakan Kamu (1 - 10)</label>
+              <input type="number" id="inputTebakan" min="1" max="10" placeholder="1 - 10">
+            </div>
+            <div class="guess-buttons">
+              <button type="button" id="btnTebak" class="btn-primary">Cek tebakanmu!</button>
+              <button type="button" id="btnResetTebak" class="btn-secondary">Acak ulang yaa...</button>
+            </div>
+          </div>
+
+          <div id="hasilTebakan" class="result-box">
+            <span class="result-placeholder">Menunggu angka tebakanmu nih!</span>
+          </div>
+        </div>
+      </article>
+    </section>
+    <footer class="footer-note"><span>Winda Magdalena Nadirajpidera Simamora — Tugas Praktikum Perancangan Web</span></footer>
+  </main>
+
+  <script>
+    // 1. Program Menentukan Bilangan Ganjil / Genap (var, let, dan const)
+    const btnCekParitas = document.getElementById("btnCekParitas");
+    const inputAngka = document.getElementById("inputAngka");
+    const hasilParitas = document.getElementById("hasilParitas");
+
+    btnCekParitas.addEventListener("click", function () {
+      const nilaiRaw = inputAngka.value;
+      if (nilaiRaw === "") {
+        hasilParitas.className = "result-box result-error";
+        hasilParitas.innerHTML = `
+          <span class="result-main">Input masih kosong!</span>
+          <span class="result-sub">Silakan masukkan angka terlebih dahulu.</span>
+        `;
+        return;
+      }
+
+      var angka = parseInt(nilaiRaw, 10);
+
+      // Menggunakan let karena nilai status akan diubah sesuai kondisi ganjil/genap
+      let statusBilangan = "";
+      let keteranganModulo = "";
+
+      if (angka % 2 === 0) {
+        statusBilangan = "BILANGAN GENAP";
+        keteranganModulo = `${angka} habis dibagi 2 (sisa bagi = 0)`;
+      } else {
+        statusBilangan = "BILANGAN GANJIL";
+        keteranganModulo = `${angka} tidak habis dibagi 2 (sisa bagi = ${Math.abs(angka % 2)})`;
+      }
+
+      hasilParitas.className = "result-box result-success";
+      hasilParitas.innerHTML = `
+        <span class="result-main">${angka} adalah ${statusBilangan}</span>
+        <span class="result-sub">${keteranganModulo}</span>
+      `;
+    });
+
+    // 2. Program Operasi Matematika (Pilihan: +, -, *, /, semua)
+    const opButtons = document.querySelectorAll(".op-btn");
+    const btnHitung = document.getElementById("btnHitung");
+    const angkaPertamaInput = document.getElementById("angkaPertama");
+    const angkaKeduaInput = document.getElementById("angkaKedua");
+    const hasilMath = document.getElementById("hasilMath");
+
+    // Menyimpan pilihan operasi aktif (default: tambah)
+    let operasiTerpilih = "tambah";
+
+    // Event listener untuk memilih tombol operasi (+, -, ×, ÷, Semua)
+    opButtons.forEach(function (tombol) {
+      tombol.addEventListener("click", function () {
+        opButtons.forEach((btn) => btn.classList.remove("active"));
+        this.classList.add("active");
+        operasiTerpilih = this.getAttribute("data-op");
+      });
+    });
+
+    // Event listener untuk mengeksekusi operasi yang dipilih
+    btnHitung.addEventListener("click", function () {
+      const val1 = angkaPertamaInput.value;
+      const val2 = angkaKeduaInput.value;
+
+      if (val1 === "" || val2 === "") {
+        hasilMath.className = "result-box result-error";
+        hasilMath.innerHTML = `
+          <span class="result-main">Angka belum lengkap!</span>
+          <span class="result-sub">Isi kedua kolom angka sebelum menghitung.</span>
+        `;
+        return;
+      }
+
+      const bil1 = parseFloat(val1);
+      const bil2 = parseFloat(val2);
+
+      // Opsi menghitung semua operasi sekaligus
+      if (operasiTerpilih === "semua") {
+        const hasilTambah = bil1 + bil2;
+        const hasilKurang = bil1 - bil2;
+        const hasilKali = bil1 * bil2;
+        const hasilBagi = bil2 === 0 ? "Tak terdefinisi (÷ 0)" : Number((bil1 / bil2).toFixed(4));
+
+        hasilMath.className = "result-box result-success";
+        hasilMath.innerHTML = `
+          <span class="result-main">Hasil Semua Operasi (${bil1} dan ${bil2}):</span>
+          <div class="all-ops-grid">
+            <div class="all-ops-item"><strong>Tambah (+):</strong> ${hasilTambah}</div>
+            <div class="all-ops-item"><strong>Kurang (&minus;):</strong> ${hasilKurang}</div>
+            <div class="all-ops-item"><strong>Kali (&times;):</strong> ${hasilKali}</div>
+            <div class="all-ops-item"><strong>Bagi (&divide;):</strong> ${hasilBagi}</div>
+          </div>
+        `;
+        return;
+      }
+
+      let hasilAkhir = 0;
+      let simbol = "";
+      let namaOperasi = "";
+
+      switch (operasiTerpilih) {
+        case "tambah":
+          hasilAkhir = bil1 + bil2;
+          simbol = "+";
+          namaOperasi = "Penjumlahan";
+          break;
+        case "kurang":
+          hasilAkhir = bil1 - bil2;
+          simbol = "-";
+          namaOperasi = "Pengurangan";
+          break;
+        case "kali":
+          hasilAkhir = bil1 * bil2;
+          simbol = "×";
+          namaOperasi = "Perkalian";
+          break;
+        case "bagi":
+          if (bil2 === 0) {
+            hasilMath.className = "result-box result-error";
+            hasilMath.innerHTML = `
+              <span class="result-main">Tidak dapat membagi dengan 0!</span>
+              <span class="result-sub">Ubah angka kedua selain nol untuk pembagian.</span>
+            `;
+            return;
+          }
+          hasilAkhir = Number((bil1 / bil2).toFixed(4));
+          simbol = "÷";
+          namaOperasi = "Pembagian";
+          break;
+      }
+
+      hasilMath.className = "result-box result-success";
+      hasilMath.innerHTML = `
+        <span class="result-main">Hasil ${namaOperasi}: ${hasilAkhir}</span>
+        <span class="result-sub">Perhitungan: ${bil1} ${simbol} ${bil2} = ${hasilAkhir}</span>
+      `;
+    });
+
+    // 3. Program Tebak Angka (Menentukan Benar atau Salah)
+    const inputTebakan = document.getElementById("inputTebakan");
+    const btnTebak = document.getElementById("btnTebak");
+    const btnResetTebak = document.getElementById("btnResetTebak");
+    const hasilTebakan = document.getElementById("hasilTebakan");
+
+    // Membuat angka rahasia acak dari 1 sampai 10
+    let angkaRahasia = Math.floor(Math.random() * 10) + 1;
+    let jumlahPercobaan = 0;
+
+    btnTebak.addEventListener("click", function () {
+      const tebakanUser = parseInt(inputTebakan.value, 10);
+      if (isNaN(tebakanUser) || tebakanUser < 1 || tebakanUser > 10) {
+        hasilTebakan.className = "result-box result-error";
+        hasilTebakan.innerHTML = `
+          <span class="result-main">Input tidak valid!</span>
+          <span class="result-sub">Masukkan angka antara 1 hingga 10.</span>
+        `;
+        return;
+      }
+
+      jumlahPercobaan++;
+
+      if (tebakanUser === angkaRahasia) {
+        hasilTebakan.className = "result-box result-success";
+        hasilTebakan.innerHTML = `
+          <span class="result-main">GOKIL, BENAR! Angkanya adalah ${angkaRahasia}.</span>
+          <span class="result-sub">Kamu berhasil nebak angkanya! ${jumlahPercobaan} kali percobaan. Klik "Acak Ulang" untuk main lagi.</span>
+        `;
+      } else {
+        const petunjuk = tebakanUser < angkaRahasia ? "terlalu kecil" : "terlalu besar";
+        hasilTebakan.className = "result-box result-error";
+        hasilTebakan.innerHTML = `
+          <span class="result-main">UPS, SALAH!</span>
+          <span class="result-sub">Angka ${tebakanUser} ${petunjuk}. Coba angka lain! (Percobaan ke-${jumlahPercobaan})</span>
+        `;
+      }
+    });
+
+    // Fitur untuk mereset dan mengacak angka baru
+    btnResetTebak.addEventListener("click", function () {
+      angkaRahasia = Math.floor(Math.random() * 10) + 1;
+      jumlahPercobaan = 0;
+      inputTebakan.value = "";
+      hasilTebakan.className = "result-box";
+      hasilTebakan.innerHTML = `
+        <span class="result-placeholder">Angka rahasia baru telah diacak (1 - 10). Silakan tebak!</span>
+      `;
+    });
+  </script>
+
+</body>
+</html>
